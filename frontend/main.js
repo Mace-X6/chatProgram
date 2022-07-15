@@ -5,7 +5,8 @@ let method = 'POST'
 var options = {
     host: 'localhost',
     port: '3000',
-    path: '/',
+    recipient: 'nuts',
+    sender: 'dees',
     method: method
 };
 
