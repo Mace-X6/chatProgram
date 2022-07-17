@@ -3,6 +3,6 @@
         "userName": "user1",
         "host": "1.2.3.456",
         "port": "6969",
-        "some way of authenticating this is really that user": "yes its really me :)"
+        "publicToken": "123abc"
     }
 ]

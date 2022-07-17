@@ -1,4 +1,5 @@
 var http = require('http');
+const crypto = require('crypto');
 
 //The url we want is: 'www.random.org/integers/?num=1&min=1&max=10&col=1&base=10&format=plain&rnd=new'
 let method = 'POST'
@@ -7,7 +8,8 @@ var options = {
     port: '3000',
     recipient: 'nuts',
     sender: 'dees',
-    method: method
+    method: method,
+    intentions: 'SENDMESSAGE or CREATEUSER or GETMESSAGES'
 };
 
 callback = function (response) {

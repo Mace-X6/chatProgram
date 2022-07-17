@@ -4,7 +4,8 @@
         "publicKey": "69",
         "chatHistory": [{
             "content": "deez",
-            "time": "9405",
+            "stamp": "9405",
+            "__comment": "every message is assigned an ascending stamp, so a user can request every message after a certain stamp. this way you also always know the very first stamp. (0 indexed ofc)",
             "author": "user1"
         }]
     }
