@@ -17,7 +17,7 @@ const server = http.createServer((incReq, res) => {
         sha256.update(incReq.token);
         var user = findUser(incReq.sender, users);
 
-        if (sha256.digest('hex') === user[0].publicToken) { // the user will have the original token, send the token hashed twice and the server has the token stored hashed 3 times over.
+        if (sha256.digest('hex') === user[0].publicToken) { // the user will have the original token, send the token hashed twice and the server has the token stored hashed 2 times.
             res.writeHead(200, {
                 'Content-Type': 'text/json'
             });
@@ -32,10 +32,45 @@ const server = http.createServer((incReq, res) => {
         }
         res.end();
 
-        // client must provide the following for GET requests:
+        // client must provide the following for this request:
         // token
         // sender
         // fetchChats [{afterStamp, chatWith}]
+        // intentions
+    }
+
+    if (incReq.method === 'POST' && incReq.intentions === 'CREATEUSER') {
+
+        var userNameUnused = true;
+        for (var i = 0; i < users.length; i++) {
+            if (users[i].userName === incReq.userName) {
+                userNameUnused = false;
+            }
+        }
+
+        if (userNameUnused && userName.length <= 16) {
+            var user = {
+                "userName": incReq.userName,
+                "host": incReq.host,
+                "port": incReq.port,
+                "publicToken": incReq.publicToken
+            }
+            users.push(user);
+            fs.writeFileSync('./users.json', JSON.stringify(users));
+            res.end('{"response":"ok, user created"}');
+        }
+
+        else{
+            res.end('{"response":"invalid username"}')
+        }
+
+        // client must provide the following for this request:
+        // token
+        // host
+        // port
+        // publicToken
+        // intentions
+        // userName
     }
 
     if (incReq.method === 'POST' && incReq.intentions === 'SENDMESSAGE') {
@@ -48,8 +83,12 @@ const server = http.createServer((incReq, res) => {
         });
 
         var chatHis = findChat(incReq.recipient, incReq.sender, data).chatHistory;
-        chatHis[0].push(body);
-        chatHis[0][chatHis.length - 1];
+        body = JSON.parse(body)
+        body.stamp = chatHis[0][chatHis.length - 1].stamp + 1;
+        data[chatHis[1]] = chatHis[0].chatHistory.push(body);
+
+        fs.writeFileSync('./data.json', JSON.stringify(data));
+        
         var recipient = findUser(incReq.recipient, users);
 
         let method = 'POST'
@@ -64,10 +103,13 @@ const server = http.createServer((incReq, res) => {
         outReq.write(body);
         outReq.end();
         data[chatHis[1]] = chatHis[0];
-    }
 
-    if (incReq.method === 'POST' && incReq.intentions === 'CREATEUSER') {
-        //do this next
+        // client must provide the following for this request:
+        // host
+        // port
+        // sender
+        // recipient
+        // intentions
     }
 });
 
